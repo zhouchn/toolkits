@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+
+    <springProperty name="LOG_LEVEL" source="logging.level" defaultValue="INFO"/>
+
+    <!-- 控制台日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8">
+            <pattern>%cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %yellow([%thread]) [%X{TRACE_ID}] %highlight(%-5level) %boldGreen(%logger{36}): %highlight(%msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 应用日志 -->
+    <logger name="com.aventon" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- 总日志出口 -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
