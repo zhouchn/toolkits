@@ -5,18 +5,26 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.zch.toolkits.web.api.version.VersionedRequestMapping;
 import com.zch.toolkits.web.filter.RequestLoggingFilter;
 import com.zch.toolkits.web.filter.RequestTracingFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-public class WebMvcConfig implements WebMvcConfigurer {
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer, WebMvcRegistrations {
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     @Bean
     public FilterRegistrationBean<RequestLoggingFilter> loggingFilter() {
@@ -65,5 +73,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 gen.writeNumber(value.toInstant(ZoneOffset.UTC).toEpochMilli()); // 转换为时间戳 (毫秒级)
             }
         }
+    }
+
+    @Override
+    public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+        return new VersionedRequestMapping(applicationName);
     }
 }
